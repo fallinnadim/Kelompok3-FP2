@@ -26,17 +26,17 @@ func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 	if errValidation != nil {
 		return "", errValidation
 	}
-	newUser, errUser := a.AuthRepository.FindEmail(user.Email)
+	loginUser, errUser := a.AuthRepository.FindEmail(user.Email)
 	if errUser != nil {
 		return "", errors.New("Invalid username or password")
 	}
 	config.LoadConfig()
-	verifyError := utils.VerifyPassword(newUser.Password, user.Password)
+	verifyError := utils.VerifyPassword(loginUser.Password, user.Password)
 	if verifyError != nil {
 		return "", errors.New("Invalid username or password")
 	}
 	// Generate Token
-	token, errToken := utils.GenerateToken(time.Minute*60, newUser.Id, os.Getenv("TOKEN_SECRET"))
+	token, errToken := utils.GenerateToken(time.Minute*60, loginUser.Id, os.Getenv("TOKEN_SECRET"))
 	if errToken != nil {
 		log.Fatalln(errToken)
 	}
