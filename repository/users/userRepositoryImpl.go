@@ -3,10 +3,9 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"fp2/data/request"
 	"fp2/models"
-	"log"
-	"time"
 )
 
 type UserRepositoryImpl struct {
@@ -30,29 +29,22 @@ func (u *UserRepositoryImpl) Delete(id int) {
 	query := `
 		DELETE FROM users WHERE id = $1;
 	`
-	_, errQuery := u.Db.Exec(query, id)
-	if errQuery != nil {
-		log.Fatalln(errQuery.Error())
-	}
+	u.Db.Exec(query, id)
 }
 
 // Update implements UserRepository.
-func (u *UserRepositoryImpl) Update(user models.User) {
-	var updateUser = request.UpdateUserRequest{
-		Id:         user.Id,
-		Username:   user.Username,
-		Email:      user.Email,
-		Updated_At: time.Now().Format("2006-01-02"),
-	}
+func (u *UserRepositoryImpl) Update(user request.UpdateUserRequest) models.User {
+	fmt.Println(user)
+	var updatedResult = models.User{}
 	query := `
 		UPDATE users
 		SET username = $1, email = $2, updated_at = $3
-		WHERE id = $4;
+		WHERE id = $4
+		RETURNING *;
 	`
-	_, errQuery := u.Db.Exec(query, updateUser.Username, updateUser.Email, updateUser.Updated_At, updateUser.Id)
-	if errQuery != nil {
-		log.Fatalln(errQuery.Error())
-	}
+	u.Db.QueryRow(query, user.Username, user.Email, user.Updated_At, user.Id).Scan(&updatedResult.Id, &updatedResult.Username, &updatedResult.Email, &updatedResult.Password, &updatedResult.Age, &updatedResult.Created_At, &updatedResult.Updated_At)
+
+	return updatedResult
 }
 
 func NewUserRepositoryImpl(db *sql.DB) UserRepository {

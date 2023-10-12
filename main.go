@@ -21,7 +21,7 @@ func main() {
 	authRepository := repository.NewAuthRepositoryImpl(db)
 	userRepository := userRepository.NewUserRepositoryImpl(db)
 	authenticationService := services.NewAuthServiceImpl(authRepository, validate)
-	userService := userServices.NewUserServiceImpl(userRepository, validate)
+	userService := userServices.NewUserServiceImpl(userRepository, authRepository, validate)
 	authenticationController := controller.NewAuthenticationController(authenticationService)
 	userController := controller.NewUserController(userService)
 

@@ -1,9 +1,9 @@
 package response
 
-type UserSuccessRespons struct {
+type UpdatedUserResponse struct {
 	Id         int    `json:"id"`
+	Email      string `json:"email"`
 	Username   string `json:"username"`
 	Age        int    `json:"age"`
-	Created_At string `json:"created_at"`
 	Updated_At string `json:"updated_at"`
 }

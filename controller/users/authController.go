@@ -64,11 +64,5 @@ func (a *AuthenticationController) Register(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, webResponse)
 		return
 	}
-	webResponse := response.CreatedUserResponse{
-		Id:       newUser.Id,
-		Email:    newUser.Email,
-		Username: newUser.Username,
-		Age:      newUser.Age,
-	}
-	ctx.JSON(http.StatusCreated, webResponse)
+	ctx.JSON(http.StatusCreated, newUser)
 }

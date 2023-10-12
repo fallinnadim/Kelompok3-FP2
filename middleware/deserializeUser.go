@@ -27,7 +27,7 @@ func DeserializedUser(userRepository repository.UserRepository) gin.HandlerFunc 
 		if token == "" {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  false,
-				"message": "please login first",
+				"message": "Silahkan login terlebih dahulu",
 			})
 			return
 		}
@@ -36,7 +36,7 @@ func DeserializedUser(userRepository repository.UserRepository) gin.HandlerFunc 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  false,
-				"message": "Invalid token",
+				"message": "Token tidak valid",
 			})
 			return
 		}
@@ -44,7 +44,7 @@ func DeserializedUser(userRepository repository.UserRepository) gin.HandlerFunc 
 		if errId != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  false,
-				"message": "Invalid token",
+				"message": "Token tidak valid",
 			})
 			return
 		}
@@ -52,7 +52,7 @@ func DeserializedUser(userRepository repository.UserRepository) gin.HandlerFunc 
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  false,
-				"message": "the user belonging to this token no longer exist",
+				"message": "User dengan token ini sudah tidak ada lagi",
 			})
 			return
 		}
