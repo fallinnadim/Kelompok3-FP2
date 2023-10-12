@@ -2,8 +2,8 @@ package services
 
 import (
 	"errors"
-	"fp2/data/request"
-	"fp2/data/response"
+	"fp2/data/request/users"
+	"fp2/data/response/users"
 	authRepository "fp2/repository/auth"
 	repository "fp2/repository/users"
 	"time"
@@ -14,7 +14,7 @@ import (
 type UserServiceImpl struct {
 	UserRepository repository.UserRepository
 	AuthRepository authRepository.AuthRepository
-	validate       *validator.Validate
+	Validate       *validator.Validate
 }
 
 // Delete implements UserService.
@@ -25,7 +25,7 @@ func (u *UserServiceImpl) Delete(id int) {
 // Update implements UserService.
 func (u *UserServiceImpl) Update(user request.UpdateUserRequest) (response.UpdatedUserResponse, error) {
 	// Validasi Struct
-	errValidation := u.validate.Struct(user)
+	errValidation := u.Validate.Struct(user)
 	if errValidation != nil {
 		return response.UpdatedUserResponse{}, errValidation
 	}
@@ -53,10 +53,10 @@ func (u *UserServiceImpl) Update(user request.UpdateUserRequest) (response.Updat
 	return updatedUser, nil
 }
 
-func NewUserServiceImpl(userRepository repository.UserRepository, authRepository authRepository.AuthRepository, validate *validator.Validate) UserService {
+func NewUserServiceImpl(ur repository.UserRepository, ar authRepository.AuthRepository, v *validator.Validate) UserService {
 	return &UserServiceImpl{
-		UserRepository: userRepository,
-		AuthRepository: authRepository,
-		validate:       validate,
+		UserRepository: ur,
+		AuthRepository: ar,
+		Validate:       v,
 	}
 }

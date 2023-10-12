@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS social_medias (
 		name VARCHAR(50) NOT NULL,
 		social_media_url VARCHAR(50) NOT NULL,
 		user_id SERIAL NOT NULL,
+		created_at DATE NOT NULL,
+        updated_at DATE NOT NULL,
 		CONSTRAINT fk_user_id FOREIGN KEY(user_id) REFERENCES users(id)
 	);
 -- +goose StatementEnd

@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"fp2/data/request"
-	"fp2/data/response"
+	"fp2/data/request/users"
+	"fp2/data/response/users"
 	"fp2/helper"
 	services "fp2/services/users"
 	"net/http"

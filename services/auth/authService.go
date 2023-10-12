@@ -1,8 +1,8 @@
 package services
 
 import (
-	"fp2/data/request"
-	"fp2/data/response"
+	"fp2/data/request/users"
+	"fp2/data/response/users"
 )
 
 type AuthService interface {

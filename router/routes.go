@@ -1,6 +1,7 @@
 package router
 
 import (
+	smController "fp2/controller/social_media"
 	controller "fp2/controller/users"
 	"fp2/middleware"
 	repository "fp2/repository/users"
@@ -9,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(ur repository.UserRepository, a *controller.AuthenticationController, u *controller.UserController) *gin.Engine {
+func NewRouter(ur repository.UserRepository, a *controller.AuthenticationController, u *controller.UserController, sm *smController.SocialMediaController) *gin.Engine {
 	service := gin.Default()
 	service.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "Welcome Home")
@@ -21,6 +22,11 @@ func NewRouter(ur repository.UserRepository, a *controller.AuthenticationControl
 	{
 		authenticationRouter.PUT("", u.UpdateUser)
 		authenticationRouter.DELETE("", u.DeleteUser)
+	}
+	socialMediaRouter := service.Group("/socialmedias")
+	socialMediaRouter.Use(middleware.DeserializedUser(ur))
+	{
+		socialMediaRouter.POST("", sm.CreateSocialMedia)
 	}
 
 	return service

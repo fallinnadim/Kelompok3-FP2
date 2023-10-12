@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"fp2/data/request"
+	"fp2/data/request/users"
 	"fp2/models"
 )
 

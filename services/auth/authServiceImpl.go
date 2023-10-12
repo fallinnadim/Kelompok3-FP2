@@ -3,8 +3,8 @@ package services
 import (
 	"errors"
 	"fp2/config"
-	"fp2/data/request"
-	"fp2/data/response"
+	"fp2/data/request/users"
+	"fp2/data/response/users"
 	"fp2/models"
 	repository "fp2/repository/auth"
 	"fp2/utils"
@@ -17,13 +17,13 @@ import (
 
 type AuthServiceImpl struct {
 	AuthRepository repository.AuthRepository
-	validate       *validator.Validate
+	Validate       *validator.Validate
 }
 
 // Login implements AuthService.
 func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 	// Validasi Struct
-	errValidation := a.validate.Struct(user)
+	errValidation := a.Validate.Struct(user)
 	if errValidation != nil {
 		return "", errValidation
 	}
@@ -47,7 +47,7 @@ func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 // Register implements AuthService.
 func (a *AuthServiceImpl) Register(user request.CreateUserRequest) (response.CreatedUserResponse, error) {
 	// Validasi Struct
-	errValidation := a.validate.Struct(user)
+	errValidation := a.Validate.Struct(user)
 	if errValidation != nil {
 		return response.CreatedUserResponse{}, errValidation
 	}
@@ -93,9 +93,9 @@ func (a *AuthServiceImpl) CheckUsername(username string) error {
 	return err
 }
 
-func NewAuthServiceImpl(a repository.AuthRepository, v *validator.Validate) AuthService {
+func NewAuthServiceImpl(ar repository.AuthRepository, v *validator.Validate) AuthService {
 	return &AuthServiceImpl{
-		AuthRepository: a,
-		validate:       v,
+		AuthRepository: ar,
+		Validate:       v,
 	}
 }
