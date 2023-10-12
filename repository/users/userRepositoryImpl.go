@@ -42,7 +42,7 @@ func (u *UserRepositoryImpl) Update(user models.User) {
 		Id:         user.Id,
 		Username:   user.Username,
 		Email:      user.Email,
-		Updated_At: time.Now(),
+		Updated_At: time.Now().Format("2006-01-02"),
 	}
 	query := `
 		UPDATE users

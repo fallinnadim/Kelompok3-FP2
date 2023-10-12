@@ -24,11 +24,11 @@ func (a *AuthRepositoryImpl) Create(user models.User) error {
 }
 
 // Find Email.
-func (a *AuthRepositoryImpl) FindEmail(username string) (user models.User, err error) {
+func (a *AuthRepositoryImpl) FindEmail(email string) (user models.User, err error) {
 	query := `
-			SELECT * FROM users WHERE username = $1;
+			SELECT * FROM users WHERE email = $1;
 		`
-	errQuery := a.Db.QueryRow(query, username).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
+	errQuery := a.Db.QueryRow(query, email).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
 	if errQuery == sql.ErrNoRows {
 		return user, errors.New("user id not found")
 	}

@@ -21,6 +21,7 @@ type AuthServiceImpl struct {
 
 // Login implements AuthService.
 func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
+	// validasi struct
 	newUser, errUser := a.AuthRepository.FindEmail(user.Email)
 	if errUser != nil {
 		return "", errors.New("Invalid username or password")
@@ -38,6 +39,7 @@ func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 
 // Register implements AuthService.
 func (a *AuthServiceImpl) Register(user request.CreateUserRequest) error {
+	// validasi struct
 	hashedPassword, err := utils.HashPassword(user.Password)
 	helper.ErrorFatal(err)
 	newUser := models.User{
@@ -45,8 +47,8 @@ func (a *AuthServiceImpl) Register(user request.CreateUserRequest) error {
 		Email:      user.Email,
 		Password:   hashedPassword,
 		Age:        user.Age,
-		Created_At: time.Now(),
-		Updated_At: time.Now(),
+		Created_At: time.Now().Format("2006-01-02"),
+		Updated_At: time.Now().Format("2006-01-02"),
 	}
 	a.AuthRepository.Create(newUser)
 	return nil
