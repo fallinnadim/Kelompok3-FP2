@@ -11,7 +11,18 @@ type Response struct {
 	Data    interface{} `json:"data,omitempty"`
 }
 
+type FailedResponse struct {
+	Status  bool     `json:"status"`
+	Message []string `json:"message"`
+}
+
 type LoginResponse struct {
-	TokenType string `json:"token_type"`
-	Token     string `json:"token"`
+	Token string `json:"token"`
+}
+
+type CreatedUserResponse struct {
+	Id       int    `json:"id"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Age      int    `json:"age"`
 }

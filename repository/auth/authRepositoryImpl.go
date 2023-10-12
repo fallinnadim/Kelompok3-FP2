@@ -11,16 +11,17 @@ type AuthRepositoryImpl struct {
 }
 
 // Register implements UserRepository.
-func (a *AuthRepositoryImpl) Create(user models.User) error {
+func (a *AuthRepositoryImpl) Create(user models.User) models.User {
+	var newUser = models.User{}
 	query := `
 		INSERT INTO users (username, email, password, age, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6);
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING *;
 	`
-	_, errQuery := a.Db.Exec(query, user.Username, user.Email, user.Password, user.Age, user.Created_At, user.Updated_At)
-	if errQuery != nil {
-		return errQuery
-	}
-	return nil
+	a.Db.QueryRow(query, user.Username, user.Email, user.Password, user.Age, user.Created_At, user.Updated_At).Scan(&newUser.Id, &newUser.Username, &newUser.Email, &newUser.Password, &newUser.Age, &newUser.Created_At, &newUser.Updated_At)
+
+	return newUser
+
 }
 
 // Find Email.
@@ -30,7 +31,19 @@ func (a *AuthRepositoryImpl) FindEmail(email string) (user models.User, err erro
 		`
 	errQuery := a.Db.QueryRow(query, email).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
 	if errQuery == sql.ErrNoRows {
-		return user, errors.New("user id not found")
+		return user, errors.New("email not found")
+	}
+	return user, nil
+}
+
+// Find Username.
+func (a *AuthRepositoryImpl) FindUsername(username string) (user models.User, err error) {
+	query := `
+			SELECT * FROM users WHERE username = $1;
+		`
+	errQuery := a.Db.QueryRow(query, username).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
+	if errQuery == sql.ErrNoRows {
+		return user, errors.New("username not found")
 	}
 	return user, nil
 }

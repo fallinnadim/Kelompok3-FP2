@@ -21,25 +21,25 @@ func NewAuthenticationController(s services.AuthService) *AuthenticationControll
 func (a *AuthenticationController) Login(ctx *gin.Context) {
 	loginRequest := request.LoginUserRequest{}
 	err := ctx.ShouldBindJSON(&loginRequest)
-	helper.ErrorFatal(err)
-
-	token, errToken := a.AuthenticationService.Login(loginRequest)
-	if errToken != nil {
-		webResponse := response.Response{
+	if err != nil {
+		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: "Invalid Username or password",
+			Message: helper.ParseError(err),
 		}
 		ctx.JSON(http.StatusBadRequest, webResponse)
 		return
 	}
-	resp := response.LoginResponse{
-		TokenType: "Bearer",
-		Token:     token,
+	token, errToken := a.AuthenticationService.Login(loginRequest)
+	if errToken != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errToken),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
 	}
-	webResponse := response.Response{
-		Status:  true,
-		Message: "Successfully Login",
-		Data:    resp,
+	webResponse := response.LoginResponse{
+		Token: token,
 	}
 	ctx.JSON(http.StatusOK, webResponse)
 }
@@ -47,12 +47,28 @@ func (a *AuthenticationController) Login(ctx *gin.Context) {
 func (a *AuthenticationController) Register(ctx *gin.Context) {
 	createUserRequest := request.CreateUserRequest{}
 	err := ctx.ShouldBindJSON(&createUserRequest)
-	helper.ErrorFatal(err)
-	a.AuthenticationService.Register(createUserRequest)
-	webResponse := response.Response{
-		Status:  true,
-		Message: "Successfully Created User",
-		Data:    nil,
+	if err != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(err),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	newUser, errRegister := a.AuthenticationService.Register(createUserRequest)
+	if errRegister != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errRegister),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	webResponse := response.CreatedUserResponse{
+		Id:       newUser.Id,
+		Email:    newUser.Email,
+		Username: newUser.Username,
+		Age:      newUser.Age,
 	}
 	ctx.JSON(http.StatusCreated, webResponse)
 }

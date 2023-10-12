@@ -12,8 +12,7 @@ func NewRouter(a *controller.AuthenticationController) *gin.Engine {
 	service.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "Welcome Home")
 	})
-	router := service.Group("/api")
-	authenticationRouter := router.Group("/auth")
+	authenticationRouter := service.Group("/users")
 	authenticationRouter.POST("/register", a.Register)
 	authenticationRouter.POST("/login", a.Login)
 
