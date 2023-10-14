@@ -30,3 +30,11 @@ type AllPhotoResponse struct {
 	Updated_At string                     `json:"updated_at"`
 	User       response.UserOnSocialMedia `json:"user"`
 }
+
+type PhotoOnComment struct {
+	Id        int    `json:"id"`
+	Title     string `json:"title"`
+	Caption   string `json:"caption"`
+	Photo_Url string `json:"photo_url"`
+	User_Id   int    `json:"user_id"`
+}
