@@ -8,8 +8,8 @@ import (
 
 type PhotoRepository interface {
 	FindAll() []response.AllPhotoResponse
-	Create(sm request.CreatePhotoRequest) models.SocialMedia
-	Update(sm request.UpdatePhotoRequest) models.SocialMedia
+	Create(sm request.CreatePhotoRequest) models.Photo
+	Update(sm request.UpdatePhotoRequest) models.Photo
 	Delete(id int)
 	FindById(id int) (models.Photo, error)
 }

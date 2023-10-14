@@ -1,7 +1,9 @@
 package controller
 
 import (
-	"fmt"
+	request "fp2/data/request/photo"
+	response "fp2/data/response/users"
+	"fp2/helper"
 	services "fp2/services/photo"
 	"net/http"
 
@@ -25,10 +27,29 @@ func (p *PhotoController) CreatePhoto(ctx *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(userId.(int))
-	ctx.JSON(http.StatusCreated, gin.H{
-		"message": "Created",
-	})
+	// panggil service
+	createPhoto := request.CreatePhotoRequest{}
+	err := ctx.ShouldBindJSON(&createPhoto)
+	if err != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(err),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	createPhoto.User_Id = userId.(int)
+	result, errCreate := p.PhotoService.Post(createPhoto)
+	// return response
+	if errCreate != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errCreate),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	ctx.JSON(http.StatusCreated, result)
 }
 
 func (p *PhotoController) GetAllPhoto(ctx *gin.Context) {

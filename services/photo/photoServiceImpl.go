@@ -4,6 +4,7 @@ import (
 	request "fp2/data/request/photo"
 	response "fp2/data/response/photo"
 	repository "fp2/repository/photo"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 )
@@ -24,8 +25,26 @@ func (*PhotoServiceImpl) GetAll() []response.AllPhotoResponse {
 }
 
 // Post implements PhotoService.
-func (*PhotoServiceImpl) Post(p request.CreatePhotoRequest) (response.CreatedPhotoResponse, error) {
-	panic("unimplemented")
+func (p *PhotoServiceImpl) Post(cp request.CreatePhotoRequest) (response.CreatedPhotoResponse, error) {
+	// Validasi Struct
+	errValidation := p.Validate.Struct(cp)
+	if errValidation != nil {
+		return response.CreatedPhotoResponse{}, errValidation
+	}
+	cp.Created_At = time.Now().Format("2006-01-02")
+	cp.Updated_At = time.Now().Format("2006-01-02")
+	// Panggil Repository
+	result := p.PhotoRepository.Create(cp)
+	// Return
+	resp := response.CreatedPhotoResponse{
+		Id:         result.Id,
+		Title:      result.Title,
+		Caption:    result.Caption,
+		Photo_Url:  result.Photo_Url,
+		User_Id:    result.User_Id,
+		Created_At: result.Created_At,
+	}
+	return resp, nil
 }
 
 // Update implements PhotoService.
