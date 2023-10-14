@@ -7,7 +7,7 @@ import (
 
 type SocialMediaService interface {
 	Post(sm request.CreateSocialMediaRequest) (response.CreatedSocialMediaResponse, error)
-	GetAll(userId int)
+	GetAll() []response.AllSocialMediaResponse
 	Update(sm request.UpdateSocialMediaRequest) (response.UpdatedSocialMediaResponse, error)
-	Delete(id int)
+	Delete(smId int) error
 }

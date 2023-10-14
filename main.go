@@ -33,7 +33,7 @@ func main() {
 	userController := controller.NewUserController(userService)
 	socialMediaController := smController.NewSocialMediaController(socialMediaService)
 
-	routes := router.NewRouter(userRepository, authenticationController, userController, socialMediaController)
+	routes := router.NewRouter(userRepository, socialMediaRepository, authenticationController, userController, socialMediaController)
 
 	server := &http.Server{
 		Addr:    ":3030",

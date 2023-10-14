@@ -1,5 +1,7 @@
 package response
 
+import response "fp2/data/response/users"
+
 type UpdatedSocialMediaResponse struct {
 	Id               int    `json:"id"`
 	Name             string `json:"name"`
@@ -14,4 +16,14 @@ type CreatedSocialMediaResponse struct {
 	Social_Media_Url string `json:"social_media_url"`
 	User_Id          int    `json:"user_id"`
 	Created_At       string `json:"created_at"`
+}
+
+type AllSocialMediaResponse struct {
+	Id               int                        `json:"id"`
+	Name             string                     `json:"name"`
+	Social_Media_Url string                     `json:"social_media_url"`
+	User_Id          int                        `json:"user_id"`
+	Created_At       string                     `json:"created_at"`
+	Updated_At       string                     `json:"updated_at"`
+	User             response.UserOnSocialMedia `json:"user"`
 }

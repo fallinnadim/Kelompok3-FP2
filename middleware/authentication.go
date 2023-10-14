@@ -14,7 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func DeserializedUser(userRepository repository.UserRepository) gin.HandlerFunc {
+func AuthenticatedUser(userRepository repository.UserRepository) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var token string
 		authorizationHeader := ctx.Request.Header.Get("Authorization")

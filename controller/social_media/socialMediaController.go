@@ -6,6 +6,7 @@ import (
 	"fp2/helper"
 	services "fp2/services/social_media"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -50,4 +51,58 @@ func (s *SocialMediaController) CreateSocialMedia(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusCreated, result)
+}
+
+func (s *SocialMediaController) GetAllSocialMedia(ctx *gin.Context) {
+	webResponse := s.SocialMediaService.GetAll()
+	ctx.JSON(http.StatusOK, gin.H{
+		"social_medias": webResponse,
+	})
+}
+
+func (s *SocialMediaController) UpdateSocialMedia(ctx *gin.Context) {
+	userId, _ := ctx.Get("userId")
+	smId, _ := strconv.Atoi(ctx.Param("socialMediaId"))
+	// panggil service
+	updateSocialMediaRequest := request.UpdateSocialMediaRequest{}
+	err := ctx.ShouldBindJSON(&updateSocialMediaRequest)
+	if err != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(err),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	updateSocialMediaRequest.Id = smId
+	updateSocialMediaRequest.User_Id = userId.(int)
+	result, errUpdate := s.SocialMediaService.Update(updateSocialMediaRequest)
+	// return response
+	if errUpdate != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errUpdate),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
+}
+
+func (s *SocialMediaController) DeleteSocialMedia(ctx *gin.Context) {
+	smId, _ := strconv.Atoi(ctx.Param("socialMediaId"))
+	// panggil service
+	errDelete := s.SocialMediaService.Delete(smId)
+	// return response
+	if errDelete != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errDelete),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Your social media has been successfully deleted",
+	})
 }

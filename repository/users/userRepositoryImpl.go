@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"fp2/data/request/users"
 	"fp2/models"
 )
@@ -34,7 +33,6 @@ func (u *UserRepositoryImpl) Delete(id int) {
 
 // Update implements UserRepository.
 func (u *UserRepositoryImpl) Update(user request.UpdateUserRequest) models.User {
-	fmt.Println(user)
 	var updatedResult = models.User{}
 	query := `
 		UPDATE users

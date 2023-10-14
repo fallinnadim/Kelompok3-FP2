@@ -15,13 +15,16 @@ type SocialMediaServiceImpl struct {
 }
 
 // Delete implements SocialMediaService.
-func (*SocialMediaServiceImpl) Delete(id int) {
-	panic("unimplemented")
+func (s *SocialMediaServiceImpl) Delete(smId int) error {
+	// Panggil service
+	s.SocialMediaRepository.Delete(smId)
+	return nil
 }
 
 // GetAll implements SocialMediaService.
-func (*SocialMediaServiceImpl) GetAll(userId int) {
-	panic("unimplemented")
+func (s *SocialMediaServiceImpl) GetAll() []response.AllSocialMediaResponse {
+	result := s.SocialMediaRepository.FindAll()
+	return result
 }
 
 // Post implements SocialMediaService.
@@ -47,8 +50,23 @@ func (s *SocialMediaServiceImpl) Post(sm request.CreateSocialMediaRequest) (resp
 }
 
 // Update implements SocialMediaService.
-func (*SocialMediaServiceImpl) Update(sm request.UpdateSocialMediaRequest) (response.UpdatedSocialMediaResponse, error) {
-	panic("unimplemented")
+func (s *SocialMediaServiceImpl) Update(sm request.UpdateSocialMediaRequest) (response.UpdatedSocialMediaResponse, error) {
+	// Validasi Struct
+	errValidation := s.Validate.Struct(sm)
+	if errValidation != nil {
+		return response.UpdatedSocialMediaResponse{}, errValidation
+	}
+	sm.Updated_At = time.Now().Format("2006-01-02")
+	// Panggil service
+	result := s.SocialMediaRepository.Update(sm)
+	updateSocialMedia := response.UpdatedSocialMediaResponse{
+		Id:               result.Id,
+		Name:             result.Name,
+		Social_Media_Url: result.Social_Media_Url,
+		User_Id:          result.User_Id,
+		Updated_At:       result.Updated_At,
+	}
+	return updateSocialMedia, nil
 }
 
 func NewSocialMediaServiceImpl(sm repository.SocialMediaRepository, v *validator.Validate) SocialMediaService {
