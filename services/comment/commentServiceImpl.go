@@ -1,10 +1,13 @@
 package services
 
 import (
+	"errors"
 	request "fp2/data/request/comment"
 	response "fp2/data/response/comment"
+	"fp2/helper"
 	repository "fp2/repository/comment"
 	pRepository "fp2/repository/photo"
+	"net/http"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -34,7 +37,10 @@ func (c *CommentServiceImpl) Post(cp request.CreateCommentRequest) (response.Cre
 	// Fungsi cek apakah foto beneran ada atau tidak
 	_, errCheck := c.PhotoRepository.FindById(cp.Photo_Id)
 	if errCheck != nil {
-		return response.CreatedCommentResponse{}, errCheck
+		return response.CreatedCommentResponse{}, &helper.RequestError{
+			StatusCode: http.StatusNotFound,
+			Err:        errors.New("Photo Not Found"),
+		}
 	}
 	// Validasi Struct
 	errValidation := c.Validate.Struct(cp)

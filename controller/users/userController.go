@@ -33,22 +33,24 @@ func (u *UserController) UpdateUser(ctx *gin.Context) {
 	updateUserRequest := request.UpdateUserRequest{}
 	err := ctx.ShouldBindJSON(&updateUserRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	updateUserRequest.Id = userId.(int)
 	result, errUpdate := u.UserService.Update(updateUserRequest)
 	// return response
 	if errUpdate != nil {
+		statusCode, errMessage := helper.ParseError(errUpdate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errUpdate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, result)

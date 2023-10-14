@@ -3,11 +3,21 @@ package helper
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 
 	"github.com/go-playground/validator/v10"
 )
 
-func ParseError(err error) []string {
+type RequestError struct {
+	StatusCode int
+	Err        error
+}
+
+func (r *RequestError) Error() string {
+	return fmt.Sprintf("%v", r.Err)
+}
+
+func ParseError(err error) (int, []string) {
 	// ValidationError type
 	if validationErrs, ok := err.(validator.ValidationErrors); ok {
 		errorMessages := make([]string, len(validationErrs))
@@ -23,9 +33,11 @@ func ParseError(err error) []string {
 				errorMessages[i] = fmt.Sprintf("Field %s harus memiliki nilai lebih dari %s", e.Field(), e.Param())
 			}
 		}
-		return errorMessages
+		return http.StatusBadRequest, errorMessages
 	} else if marshallingErr, ok := err.(*json.UnmarshalTypeError); ok { // UnmarshalTypeError saat shouldBindJSON, memastikan tipe data yang diisi harus sesuai dengan struct
-		return []string{fmt.Sprintf("Key %s harus bernilai %s", marshallingErr.Field, marshallingErr.Type.String())}
+		return http.StatusBadRequest, []string{fmt.Sprintf("Key %s harus bernilai %s", marshallingErr.Field, marshallingErr.Type.String())}
+	} else if re, ok := err.(*RequestError); ok { // Custom error
+		return re.StatusCode, []string{re.Err.Error()}
 	}
-	return []string{err.Error()} // kasus lain
+	return http.StatusInternalServerError, []string{err.Error()} // kasus lain
 }

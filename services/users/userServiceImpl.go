@@ -4,8 +4,10 @@ import (
 	"errors"
 	"fp2/data/request/users"
 	"fp2/data/response/users"
+	"fp2/helper"
 	authRepository "fp2/repository/auth"
 	repository "fp2/repository/users"
+	"net/http"
 	"time"
 
 	"github.com/go-playground/validator/v10"
@@ -34,12 +36,18 @@ func (u *UserServiceImpl) Update(user request.UpdateUserRequest) (response.Updat
 	// Cek email
 	_, errEmail := u.AuthRepository.FindEmail(user.Email)
 	if errEmail == nil && user.Email != resultId.Email { // artinya email sudah dipakai pada record lain
-		return response.UpdatedUserResponse{}, errors.New("Email tidak bisa dipakai")
+		return response.UpdatedUserResponse{}, &helper.RequestError{
+			StatusCode: http.StatusUnprocessableEntity,
+			Err:        errors.New("Email Tidak bisa dipakai"),
+		}
 	}
 	// Cek username
 	_, errUsername := u.AuthRepository.FindUsername(user.Username)
 	if errUsername == nil && user.Username != resultId.Username { // artinya email sudah dipakai
-		return response.UpdatedUserResponse{}, errors.New("Username tidak bisa dipakai")
+		return response.UpdatedUserResponse{}, &helper.RequestError{
+			StatusCode: http.StatusUnprocessableEntity,
+			Err:        errors.New("Username Tidak bisa dipakai"),
+		}
 	}
 	user.Updated_At = time.Now().Format("2006-01-02")
 	result := u.UserRepository.Update(user)

@@ -32,22 +32,24 @@ func (c *CommentController) CreateComment(ctx *gin.Context) {
 	createComment := request.CreateCommentRequest{}
 	err := ctx.ShouldBindJSON(&createComment)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	createComment.User_Id = userId.(int)
 	result, errCreate := c.CommentService.Post(createComment)
 	// return response
 	if errCreate != nil {
+		statusCode, errMessage := helper.ParseError(errCreate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errCreate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusCreated, result)
@@ -65,22 +67,24 @@ func (c *CommentController) UpdateComment(ctx *gin.Context) {
 	updateCommentRequest := request.UpdateCommentRequest{}
 	err := ctx.ShouldBindJSON(&updateCommentRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	updateCommentRequest.Id = commentId
 	result, errUpdate := c.CommentService.Update(updateCommentRequest)
 	// return response
 	if errUpdate != nil {
+		statusCode, errMessage := helper.ParseError(errUpdate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errUpdate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, result)
@@ -92,11 +96,12 @@ func (c *CommentController) DeleteComment(ctx *gin.Context) {
 	errDelete := c.CommentService.Delete(commentId)
 	// return response
 	if errDelete != nil {
+		statusCode, errMessage := helper.ParseError(errDelete)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errDelete),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

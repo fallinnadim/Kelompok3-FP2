@@ -32,22 +32,24 @@ func (s *SocialMediaController) CreateSocialMedia(ctx *gin.Context) {
 	createSocialMedia := request.CreateSocialMediaRequest{}
 	err := ctx.ShouldBindJSON(&createSocialMedia)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	createSocialMedia.User_Id = userId.(int)
 	result, errCreate := s.SocialMediaService.Post(createSocialMedia)
 	// return response
 	if errCreate != nil {
+		statusCode, errMessage := helper.ParseError(errCreate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errCreate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusCreated, result)
@@ -67,11 +69,12 @@ func (s *SocialMediaController) UpdateSocialMedia(ctx *gin.Context) {
 	updateSocialMediaRequest := request.UpdateSocialMediaRequest{}
 	err := ctx.ShouldBindJSON(&updateSocialMediaRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	updateSocialMediaRequest.Id = smId
@@ -79,11 +82,12 @@ func (s *SocialMediaController) UpdateSocialMedia(ctx *gin.Context) {
 	result, errUpdate := s.SocialMediaService.Update(updateSocialMediaRequest)
 	// return response
 	if errUpdate != nil {
+		statusCode, errMessage := helper.ParseError(errUpdate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errUpdate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, result)
@@ -95,11 +99,12 @@ func (s *SocialMediaController) DeleteSocialMedia(ctx *gin.Context) {
 	errDelete := s.SocialMediaService.Delete(smId)
 	// return response
 	if errDelete != nil {
+		statusCode, errMessage := helper.ParseError(errDelete)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errDelete),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

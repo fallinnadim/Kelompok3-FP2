@@ -32,22 +32,24 @@ func (p *PhotoController) CreatePhoto(ctx *gin.Context) {
 	createPhoto := request.CreatePhotoRequest{}
 	err := ctx.ShouldBindJSON(&createPhoto)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	createPhoto.User_Id = userId.(int)
 	result, errCreate := p.PhotoService.Post(createPhoto)
 	// return response
 	if errCreate != nil {
+		statusCode, errMessage := helper.ParseError(errCreate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errCreate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusCreated, result)
@@ -67,11 +69,12 @@ func (p *PhotoController) UpdatePhoto(ctx *gin.Context) {
 	updatePhotoRequest := request.UpdatePhotoRequest{}
 	err := ctx.ShouldBindJSON(&updatePhotoRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	updatePhotoRequest.Id = photoId
@@ -79,11 +82,12 @@ func (p *PhotoController) UpdatePhoto(ctx *gin.Context) {
 	result, errUpdate := p.PhotoService.Update(updatePhotoRequest)
 	// return response
 	if errUpdate != nil {
+		statusCode, errMessage := helper.ParseError(errUpdate)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errUpdate),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, result)
@@ -95,11 +99,12 @@ func (p *PhotoController) DeletePhoto(ctx *gin.Context) {
 	errDelete := p.PhotoService.Delete(photoId)
 	// return response
 	if errDelete != nil {
+		statusCode, errMessage := helper.ParseError(errDelete)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errDelete),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{

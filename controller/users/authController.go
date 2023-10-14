@@ -22,20 +22,22 @@ func (a *AuthenticationController) Login(ctx *gin.Context) {
 	loginRequest := request.LoginUserRequest{}
 	err := ctx.ShouldBindJSON(&loginRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	token, errToken := a.AuthenticationService.Login(loginRequest)
 	if errToken != nil {
+		statusCode, errMessage := helper.ParseError(errToken)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errToken),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	webResponse := response.LoginResponse{
@@ -48,20 +50,22 @@ func (a *AuthenticationController) Register(ctx *gin.Context) {
 	createUserRequest := request.CreateUserRequest{}
 	err := ctx.ShouldBindJSON(&createUserRequest)
 	if err != nil {
+		statusCode, errMessage := helper.ParseError(err)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(err),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	newUser, errRegister := a.AuthenticationService.Register(createUserRequest)
 	if errRegister != nil {
+		statusCode, errMessage := helper.ParseError(errRegister)
 		webResponse := response.FailedResponse{
 			Status:  false,
-			Message: helper.ParseError(errRegister),
+			Message: errMessage,
 		}
-		ctx.JSON(http.StatusBadRequest, webResponse)
+		ctx.JSON(statusCode, webResponse)
 		return
 	}
 	ctx.JSON(http.StatusCreated, newUser)
