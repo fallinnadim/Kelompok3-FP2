@@ -6,6 +6,7 @@ import (
 	"fp2/helper"
 	services "fp2/services/photo"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -53,21 +54,55 @@ func (p *PhotoController) CreatePhoto(ctx *gin.Context) {
 }
 
 func (p *PhotoController) GetAllPhoto(ctx *gin.Context) {
+	webResponse := p.PhotoService.GetAll()
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Get all",
+		"photos": webResponse,
 	})
 }
 
 func (p *PhotoController) UpdatePhoto(ctx *gin.Context) {
-
-	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Update",
-	})
+	userId, _ := ctx.Get("userId")
+	photoId, _ := strconv.Atoi(ctx.Param("photoId"))
+	// panggil service
+	updatePhotoRequest := request.UpdatePhotoRequest{}
+	err := ctx.ShouldBindJSON(&updatePhotoRequest)
+	if err != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(err),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	updatePhotoRequest.Id = photoId
+	updatePhotoRequest.User_Id = userId.(int)
+	result, errUpdate := p.PhotoService.Update(updatePhotoRequest)
+	// return response
+	if errUpdate != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errUpdate),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
 }
 
 func (p *PhotoController) DeletePhoto(ctx *gin.Context) {
-
+	photoId, _ := strconv.Atoi(ctx.Param("photoId"))
+	// panggil service
+	errDelete := p.PhotoService.Delete(photoId)
+	// return response
+	if errDelete != nil {
+		webResponse := response.FailedResponse{
+			Status:  false,
+			Message: helper.ParseError(errDelete),
+		}
+		ctx.JSON(http.StatusBadRequest, webResponse)
+		return
+	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"message": "Delete",
+		"message": "Your photos has been successfully deleted",
 	})
 }

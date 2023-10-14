@@ -5,6 +5,7 @@ import (
 	smController "fp2/controller/social_media"
 	controller "fp2/controller/users"
 	"fp2/middleware"
+	pRepository "fp2/repository/photo"
 	srRepository "fp2/repository/social_media"
 	repository "fp2/repository/users"
 	"net/http"
@@ -12,7 +13,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter(ur repository.UserRepository, sr srRepository.SocialMediaRepository, a *controller.AuthenticationController, u *controller.UserController, sm *smController.SocialMediaController, p *pController.PhotoController) *gin.Engine {
+func NewRouter(ur repository.UserRepository, sr srRepository.SocialMediaRepository, pr pRepository.PhotoRepository, a *controller.AuthenticationController, u *controller.UserController, sm *smController.SocialMediaController, p *pController.PhotoController) *gin.Engine {
 	service := gin.Default()
 	service.GET("", func(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, "Welcome Home")
@@ -38,8 +39,8 @@ func NewRouter(ur repository.UserRepository, sr srRepository.SocialMediaReposito
 	{
 		photoRouter.POST("", p.CreatePhoto)
 		photoRouter.GET("", p.GetAllPhoto)
-		photoRouter.PUT("/:photoId", middleware.AuthorizedUserSm(sr), p.UpdatePhoto)
-		photoRouter.DELETE("/:photoId", middleware.AuthorizedUserSm(sr), p.DeletePhoto)
+		photoRouter.PUT("/:photoId", middleware.AuthorizedUserP(pr), p.UpdatePhoto)
+		photoRouter.DELETE("/:photoId", middleware.AuthorizedUserP(pr), p.DeletePhoto)
 	}
 
 	return service
