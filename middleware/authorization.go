@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fp2/helper"
 	cRepository "fp2/repository/comment"
 	pRepository "fp2/repository/photo"
 	repository "fp2/repository/social_media"
@@ -37,8 +38,9 @@ func AuthorizedUserP(p pRepository.PhotoRepository) gin.HandlerFunc {
 		photoId, _ := strconv.Atoi(ctx.Param("photoId"))
 		result, errFind := p.FindById(photoId)
 		if errFind != nil {
-			ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-				"message": "Photo Not found",
+			statusCode, errMessage := helper.ParseError(errFind)
+			ctx.AbortWithStatusJSON(statusCode, gin.H{
+				"message": errMessage,
 			})
 			return
 		}

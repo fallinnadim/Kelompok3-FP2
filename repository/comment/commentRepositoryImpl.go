@@ -3,9 +3,8 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	request "fp2/data/request/comment"
-	response "fp2/data/response/comment"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
 )
 
 type CommentRepositoryImpl struct {
@@ -13,8 +12,8 @@ type CommentRepositoryImpl struct {
 }
 
 // Create implements PhotoRepository.
-func (p *CommentRepositoryImpl) Create(cp request.CreateCommentRequest) models.Comment {
-	var newComment = models.Comment{}
+func (p *CommentRepositoryImpl) Create(cp dto.CreateCommentRequest) entity.Comment {
+	var newComment = entity.Comment{}
 	query := `
 		INSERT INTO comments (user_id, photo_id, message, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5)
@@ -34,8 +33,8 @@ func (p *CommentRepositoryImpl) Delete(id int) {
 }
 
 // FindAll implements PhotoRepository.
-func (p *CommentRepositoryImpl) FindAll(userId int) []response.AllCommentResponse {
-	comments := []response.AllCommentResponse{}
+func (p *CommentRepositoryImpl) FindAll(userId int) []dto.AllCommentResponse {
+	comments := []dto.AllCommentResponse{}
 	query := `
 		SELECT c.id, c.user_id, c.photo_id, c.message, c.created_at, c.updated_at, u.id, u.username, u.email, p.id, p.title, p.caption, p.photo_url, p.user_id
 		FROM comments AS c
@@ -46,7 +45,7 @@ func (p *CommentRepositoryImpl) FindAll(userId int) []response.AllCommentRespons
 	rows, _ := p.Db.Query(query, userId)
 	defer rows.Close()
 	for rows.Next() {
-		comment := response.AllCommentResponse{}
+		comment := dto.AllCommentResponse{}
 		rows.Scan(&comment.Id, &comment.User_Id, &comment.Photo_Id, &comment.Message, &comment.Created_At, &comment.Updated_At, &comment.User.Id, &comment.User.Username, &comment.User.Email, &comment.Photo.Id, &comment.Photo.Title, &comment.Photo.Caption, &comment.Photo.Photo_Url, &comment.Photo.User_Id)
 		comments = append(comments, comment)
 	}
@@ -54,10 +53,10 @@ func (p *CommentRepositoryImpl) FindAll(userId int) []response.AllCommentRespons
 }
 
 // FindById implements PhotoRepository.
-func (p *CommentRepositoryImpl) FindById(id int) (models.Comment, error) {
-	var comment = models.Comment{}
+func (p *CommentRepositoryImpl) FindById(id int) (entity.Comment, error) {
+	var comment = entity.Comment{}
 	query := `
-		SELECT * FROM comments WHERE id = $1;
+		SELECT id, user_id, photo_id, message, created_at, updated_at FROM comments WHERE id = $1;
 	`
 	errQuery := p.Db.QueryRow(query, id).Scan(&comment.Id, &comment.User_Id, &comment.Photo_Id, &comment.Message, &comment.Created_At, &comment.Updated_At)
 	if errQuery == sql.ErrNoRows {
@@ -67,8 +66,8 @@ func (p *CommentRepositoryImpl) FindById(id int) (models.Comment, error) {
 }
 
 // Update implements PhotoRepository.
-func (p *CommentRepositoryImpl) Update(up request.UpdateCommentRequest) models.Comment {
-	var updateComment = models.Comment{}
+func (p *CommentRepositoryImpl) Update(up dto.UpdateCommentRequest) entity.Comment {
+	var updateComment = entity.Comment{}
 	query := `
 		UPDATE comments
 		SET message = $1, updated_at = $2

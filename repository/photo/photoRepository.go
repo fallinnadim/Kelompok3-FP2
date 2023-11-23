@@ -1,15 +1,14 @@
 package repository
 
 import (
-	request "fp2/data/request/photo"
-	response "fp2/data/response/photo"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
 )
 
 type PhotoRepository interface {
-	FindAll() []response.AllPhotoResponse
-	Create(sm request.CreatePhotoRequest) models.Photo
-	Update(sm request.UpdatePhotoRequest) models.Photo
-	Delete(id int)
-	FindById(id int) (models.Photo, error)
+	FindAll() []dto.AllPhotoResponse
+	Create(sm dto.CreatePhotoRequest) entity.Photo
+	Update(sm dto.UpdatePhotoRequest) entity.Photo
+	Delete(id int) error
+	FindById(id int) (entity.Photo, error)
 }

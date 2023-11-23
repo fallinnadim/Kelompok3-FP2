@@ -1,13 +1,10 @@
 package services
 
-import (
-	request "fp2/data/request/comment"
-	response "fp2/data/response/comment"
-)
+import "fp2/dto"
 
 type CommentService interface {
-	Post(p request.CreateCommentRequest) (response.CreatedCommentResponse, error)
-	GetAll(userId int) []response.AllCommentResponse
-	Update(p request.UpdateCommentRequest) (response.UpdatedCommentResponse, error)
+	Post(p dto.CreateCommentRequest) (dto.CreatedCommentResponse, error)
+	GetAll(userId int) []dto.AllCommentResponse
+	Update(p dto.UpdateCommentRequest) (dto.UpdatedCommentResponse, error)
 	Delete(id int) error
 }

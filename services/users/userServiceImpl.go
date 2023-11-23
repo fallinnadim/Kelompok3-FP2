@@ -2,8 +2,7 @@ package services
 
 import (
 	"errors"
-	"fp2/data/request/users"
-	"fp2/data/response/users"
+	"fp2/dto"
 	"fp2/helper"
 	authRepository "fp2/repository/auth"
 	repository "fp2/repository/users"
@@ -25,18 +24,18 @@ func (u *UserServiceImpl) Delete(id int) {
 }
 
 // Update implements UserService.
-func (u *UserServiceImpl) Update(user request.UpdateUserRequest) (response.UpdatedUserResponse, error) {
+func (u *UserServiceImpl) Update(user dto.UpdateUserRequest) (dto.UpdatedUserResponse, error) {
 	// Validasi Struct
 	errValidation := u.Validate.Struct(user)
 	if errValidation != nil {
-		return response.UpdatedUserResponse{}, errValidation
+		return dto.UpdatedUserResponse{}, errValidation
 	}
 	// find by id
 	resultId, _ := u.UserRepository.FindById(user.Id)
 	// Cek email
 	_, errEmail := u.AuthRepository.FindEmail(user.Email)
 	if errEmail == nil && user.Email != resultId.Email { // artinya email sudah dipakai pada record lain
-		return response.UpdatedUserResponse{}, &helper.RequestError{
+		return dto.UpdatedUserResponse{}, &helper.RequestError{
 			StatusCode: http.StatusUnprocessableEntity,
 			Err:        errors.New("Email Tidak bisa dipakai"),
 		}
@@ -44,14 +43,14 @@ func (u *UserServiceImpl) Update(user request.UpdateUserRequest) (response.Updat
 	// Cek username
 	_, errUsername := u.AuthRepository.FindUsername(user.Username)
 	if errUsername == nil && user.Username != resultId.Username { // artinya email sudah dipakai
-		return response.UpdatedUserResponse{}, &helper.RequestError{
+		return dto.UpdatedUserResponse{}, &helper.RequestError{
 			StatusCode: http.StatusUnprocessableEntity,
 			Err:        errors.New("Username Tidak bisa dipakai"),
 		}
 	}
 	user.Updated_At = time.Now().Format("2006-01-02")
 	result := u.UserRepository.Update(user)
-	updatedUser := response.UpdatedUserResponse{
+	updatedUser := dto.UpdatedUserResponse{
 		Id:         result.Id,
 		Email:      result.Email,
 		Username:   result.Username,

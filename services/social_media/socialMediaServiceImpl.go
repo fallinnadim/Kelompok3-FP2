@@ -1,8 +1,7 @@
 package services
 
 import (
-	request "fp2/data/request/social_media"
-	response "fp2/data/response/social_media"
+	"fp2/dto"
 	repository "fp2/repository/social_media"
 	"time"
 
@@ -22,24 +21,24 @@ func (s *SocialMediaServiceImpl) Delete(smId int) error {
 }
 
 // GetAll implements SocialMediaService.
-func (s *SocialMediaServiceImpl) GetAll() []response.AllSocialMediaResponse {
+func (s *SocialMediaServiceImpl) GetAll() []dto.AllSocialMediaResponse {
 	result := s.SocialMediaRepository.FindAll()
 	return result
 }
 
 // Post implements SocialMediaService.
-func (s *SocialMediaServiceImpl) Post(sm request.CreateSocialMediaRequest) (response.CreatedSocialMediaResponse, error) {
+func (s *SocialMediaServiceImpl) Post(sm dto.CreateSocialMediaRequest) (dto.CreatedSocialMediaResponse, error) {
 	// Validasi Struct
 	errValidation := s.Validate.Struct(sm)
 	if errValidation != nil {
-		return response.CreatedSocialMediaResponse{}, errValidation
+		return dto.CreatedSocialMediaResponse{}, errValidation
 	}
 	sm.Created_At = time.Now().Format("2006-01-02")
 	sm.Updated_At = time.Now().Format("2006-01-02")
 	// Panggil Repository
 	result := s.SocialMediaRepository.Create(sm)
 	// Return
-	resp := response.CreatedSocialMediaResponse{
+	resp := dto.CreatedSocialMediaResponse{
 		Id:               result.Id,
 		Name:             result.Name,
 		Social_Media_Url: result.Social_Media_Url,
@@ -50,16 +49,16 @@ func (s *SocialMediaServiceImpl) Post(sm request.CreateSocialMediaRequest) (resp
 }
 
 // Update implements SocialMediaService.
-func (s *SocialMediaServiceImpl) Update(sm request.UpdateSocialMediaRequest) (response.UpdatedSocialMediaResponse, error) {
+func (s *SocialMediaServiceImpl) Update(sm dto.UpdateSocialMediaRequest) (dto.UpdatedSocialMediaResponse, error) {
 	// Validasi Struct
 	errValidation := s.Validate.Struct(sm)
 	if errValidation != nil {
-		return response.UpdatedSocialMediaResponse{}, errValidation
+		return dto.UpdatedSocialMediaResponse{}, errValidation
 	}
 	sm.Updated_At = time.Now().Format("2006-01-02")
 	// Panggil service
 	result := s.SocialMediaRepository.Update(sm)
-	updateSocialMedia := response.UpdatedSocialMediaResponse{
+	updateSocialMedia := dto.UpdatedSocialMediaResponse{
 		Id:               result.Id,
 		Name:             result.Name,
 		Social_Media_Url: result.Social_Media_Url,

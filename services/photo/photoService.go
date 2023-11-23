@@ -1,13 +1,10 @@
 package services
 
-import (
-	request "fp2/data/request/photo"
-	response "fp2/data/response/photo"
-)
+import "fp2/dto"
 
 type PhotoService interface {
-	Post(p request.CreatePhotoRequest) (response.CreatedPhotoResponse, error)
-	GetAll() []response.AllPhotoResponse
-	Update(p request.UpdatePhotoRequest) (response.UpdatedPhotoResponse, error)
+	Post(p dto.CreatePhotoRequest) (dto.CreatedPhotoResponse, error)
+	GetAll() []dto.AllPhotoResponse
+	Update(p dto.UpdatePhotoRequest) (dto.UpdatedPhotoResponse, error)
 	Delete(id int) error
 }

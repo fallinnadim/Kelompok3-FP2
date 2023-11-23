@@ -1,15 +1,14 @@
 package repository
 
 import (
-	request "fp2/data/request/social_media"
-	response "fp2/data/response/social_media"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
 )
 
 type SocialMediaRepository interface {
-	FindAll() []response.AllSocialMediaResponse
-	Create(sm request.CreateSocialMediaRequest) models.SocialMedia
-	Update(sm request.UpdateSocialMediaRequest) models.SocialMedia
+	FindAll() []dto.AllSocialMediaResponse
+	Create(sm dto.CreateSocialMediaRequest) entity.SocialMedia
+	Update(sm dto.UpdateSocialMediaRequest) entity.SocialMedia
 	Delete(id int)
-	FindById(id int) (models.SocialMedia, error)
+	FindById(id int) (entity.SocialMedia, error)
 }

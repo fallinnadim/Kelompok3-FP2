@@ -2,10 +2,10 @@ package middleware
 
 import (
 	"fmt"
-	"fp2/config"
+	"fp2/infra/postgres"
 	repository "fp2/repository/users"
 
-	"fp2/utils"
+	"fp2/helper"
 	"net/http"
 	"os"
 	"strconv"
@@ -31,8 +31,8 @@ func AuthenticatedUser(userRepository repository.UserRepository) gin.HandlerFunc
 			})
 			return
 		}
-		config.LoadConfig()
-		sub, err := utils.ValidateToken(token, os.Getenv("TOKEN_SECRET"))
+		postgres.LoadConfig()
+		sub, err := helper.ValidateToken(token, os.Getenv("TOKEN_SECRET"))
 		if err != nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 				"status":  false,

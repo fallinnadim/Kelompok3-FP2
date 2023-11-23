@@ -2,12 +2,11 @@ package services
 
 import (
 	"errors"
-	"fp2/config"
-	"fp2/data/request/users"
-	"fp2/data/response/users"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
+	"fp2/helper"
+	"fp2/infra/postgres"
 	repository "fp2/repository/auth"
-	"fp2/utils"
 	"log"
 	"os"
 	"time"
@@ -21,7 +20,7 @@ type AuthServiceImpl struct {
 }
 
 // Login implements AuthService.
-func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
+func (a *AuthServiceImpl) Login(user dto.LoginUserRequest) (string, error) {
 	// Validasi Struct
 	errValidation := a.Validate.Struct(user)
 	if errValidation != nil {
@@ -31,13 +30,13 @@ func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 	if errUser != nil {
 		return "", errors.New("Invalid username or password")
 	}
-	config.LoadConfig()
-	verifyError := utils.VerifyPassword(loginUser.Password, user.Password)
+	postgres.LoadConfig()
+	verifyError := helper.VerifyPassword(loginUser.Password, user.Password)
 	if verifyError != nil {
 		return "", errors.New("Invalid username or password")
 	}
 	// Generate Token
-	token, errToken := utils.GenerateToken(time.Minute*60, loginUser.Id, os.Getenv("TOKEN_SECRET"))
+	token, errToken := helper.GenerateToken(time.Minute*60, loginUser.Id, os.Getenv("TOKEN_SECRET"))
 	if errToken != nil {
 		log.Fatalln(errToken)
 	}
@@ -45,23 +44,23 @@ func (a *AuthServiceImpl) Login(user request.LoginUserRequest) (string, error) {
 }
 
 // Register implements AuthService.
-func (a *AuthServiceImpl) Register(user request.CreateUserRequest) (response.CreatedUserResponse, error) {
+func (a *AuthServiceImpl) Register(user dto.CreateUserRequest) (dto.CreatedUserResponse, error) {
 	// Validasi Struct
 	errValidation := a.Validate.Struct(user)
 	if errValidation != nil {
-		return response.CreatedUserResponse{}, errValidation
+		return dto.CreatedUserResponse{}, errValidation
 	}
 	// Cek Email
 	if err := a.CheckEmail(user.Email); err == nil { // err nil -> artinya email ketemu, return disini
-		return response.CreatedUserResponse{}, errors.New("Silahkan gunakan Email lain")
+		return dto.CreatedUserResponse{}, errors.New("Silahkan gunakan Email lain")
 	}
 	// Cek Username
 	if err := a.CheckUsername(user.Username); err == nil { // err nil -> artinya username ketemu, return disini
-		return response.CreatedUserResponse{}, errors.New("Silahkan gunakan Username lain")
+		return dto.CreatedUserResponse{}, errors.New("Silahkan gunakan Username lain")
 	}
 	// Lewat dari sini email dan username available
-	hashedPassword, _ := utils.HashPassword(user.Password)
-	newUser := models.User{
+	hashedPassword, _ := helper.HashPassword(user.Password)
+	newUser := entity.User{
 		Username:   user.Username,
 		Email:      user.Email,
 		Password:   hashedPassword,
@@ -70,7 +69,7 @@ func (a *AuthServiceImpl) Register(user request.CreateUserRequest) (response.Cre
 		Updated_At: time.Now().Format("2006-01-02"),
 	}
 	result := a.AuthRepository.Create(newUser)
-	createdUser := response.CreatedUserResponse{
+	createdUser := dto.CreatedUserResponse{
 		Id:       result.Id,
 		Email:    result.Email,
 		Username: result.Username,

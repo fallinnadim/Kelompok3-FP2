@@ -1,15 +1,14 @@
 package repository
 
 import (
-	request "fp2/data/request/comment"
-	response "fp2/data/response/comment"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
 )
 
 type CommentRepository interface {
-	FindAll(userId int) []response.AllCommentResponse
-	Create(sm request.CreateCommentRequest) models.Comment
-	Update(sm request.UpdateCommentRequest) models.Comment
+	FindAll(userId int) []dto.AllCommentResponse
+	Create(sm dto.CreateCommentRequest) entity.Comment
+	Update(sm dto.UpdateCommentRequest) entity.Comment
 	Delete(id int)
-	FindById(id int) (models.Comment, error)
+	FindById(id int) (entity.Comment, error)
 }

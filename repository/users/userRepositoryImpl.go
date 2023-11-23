@@ -3,8 +3,8 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fp2/data/request/users"
-	"fp2/models"
+	"fp2/dto"
+	"fp2/entity"
 )
 
 type UserRepositoryImpl struct {
@@ -12,9 +12,9 @@ type UserRepositoryImpl struct {
 }
 
 // FindById implements UserRepository.
-func (u *UserRepositoryImpl) FindById(id int) (user models.User, err error) {
+func (u *UserRepositoryImpl) FindById(id int) (user entity.User, err error) {
 	query := `
-			SELECT * FROM users WHERE id = $1;
+			SELECT id, username, email, password, age, created_at, updated_at FROM users WHERE id = $1;
 		`
 	errQuery := u.Db.QueryRow(query, id).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
 	if errQuery == sql.ErrNoRows {
@@ -32,8 +32,8 @@ func (u *UserRepositoryImpl) Delete(id int) {
 }
 
 // Update implements UserRepository.
-func (u *UserRepositoryImpl) Update(user request.UpdateUserRequest) models.User {
-	var updatedResult = models.User{}
+func (u *UserRepositoryImpl) Update(user dto.UpdateUserRequest) entity.User {
+	var updatedResult = entity.User{}
 	query := `
 		UPDATE users
 		SET username = $1, email = $2, updated_at = $3

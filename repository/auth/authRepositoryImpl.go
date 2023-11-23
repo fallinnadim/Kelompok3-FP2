@@ -3,7 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fp2/models"
+	"fp2/entity"
 )
 
 type AuthRepositoryImpl struct {
@@ -11,8 +11,8 @@ type AuthRepositoryImpl struct {
 }
 
 // Register implements UserRepository.
-func (a *AuthRepositoryImpl) Create(user models.User) models.User {
-	var newUser = models.User{}
+func (a *AuthRepositoryImpl) Create(user entity.User) entity.User {
+	var newUser = entity.User{}
 	query := `
 		INSERT INTO users (username, email, password, age, created_at, updated_at)
 		VALUES ($1, $2, $3, $4, $5, $6)
@@ -25,9 +25,9 @@ func (a *AuthRepositoryImpl) Create(user models.User) models.User {
 }
 
 // Find Email.
-func (a *AuthRepositoryImpl) FindEmail(email string) (user models.User, err error) {
+func (a *AuthRepositoryImpl) FindEmail(email string) (user entity.User, err error) {
 	query := `
-			SELECT * FROM users WHERE email = $1;
+			SELECT id, username, email, password, age, created_at, updated_at FROM users WHERE email = $1;
 		`
 	errQuery := a.Db.QueryRow(query, email).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
 	if errQuery == sql.ErrNoRows {
@@ -37,9 +37,9 @@ func (a *AuthRepositoryImpl) FindEmail(email string) (user models.User, err erro
 }
 
 // Find Username.
-func (a *AuthRepositoryImpl) FindUsername(username string) (user models.User, err error) {
+func (a *AuthRepositoryImpl) FindUsername(username string) (user entity.User, err error) {
 	query := `
-			SELECT * FROM users WHERE username = $1;
+			SELECT id, username, email, password, age, created_at, updated_at FROM users WHERE username = $1;
 		`
 	errQuery := a.Db.QueryRow(query, username).Scan(&user.Id, &user.Username, &user.Email, &user.Password, &user.Age, &user.Created_At, &user.Updated_At)
 	if errQuery == sql.ErrNoRows {
