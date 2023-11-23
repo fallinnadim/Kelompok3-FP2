@@ -15,12 +15,14 @@ import (
 	userServices "fp2/services/users"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 )
 
 func StartApp() {
+	port := os.Getenv("PORT")
 	// Database
 	db := postgres.GetDbInstance()
 	validate := validator.New()
@@ -81,7 +83,7 @@ func StartApp() {
 	}
 
 	server := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":" + port,
 		Handler: service,
 	}
 	err := server.ListenAndServe()
