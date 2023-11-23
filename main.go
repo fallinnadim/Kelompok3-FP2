@@ -1,6 +1,8 @@
 package main
 
-import "fp2/handler"
+import (
+	"fp2/handler"
+)
 
 func main() {
 	handler.StartApp()

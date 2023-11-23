@@ -27,10 +27,3 @@ func GetDbInstance() *sql.DB {
 	log.Println("Successfully connected to database")
 	return db
 }
-
-func LoadConfig() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalln("error loading .env file")
-	}
-}

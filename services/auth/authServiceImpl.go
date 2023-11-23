@@ -2,10 +2,10 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"fp2/dto"
 	"fp2/entity"
 	"fp2/helper"
-	"fp2/infra/postgres"
 	repository "fp2/repository/auth"
 	"log"
 	"os"
@@ -30,11 +30,11 @@ func (a *AuthServiceImpl) Login(user dto.LoginUserRequest) (string, error) {
 	if errUser != nil {
 		return "", errors.New("Invalid username or password")
 	}
-	postgres.LoadConfig()
 	verifyError := helper.VerifyPassword(loginUser.Password, user.Password)
 	if verifyError != nil {
 		return "", errors.New("Invalid username or password")
 	}
+	fmt.Println(os.Getenv("TOKEN_SECRET"))
 	// Generate Token
 	token, errToken := helper.GenerateToken(time.Minute*60, loginUser.Id, os.Getenv("TOKEN_SECRET"))
 	if errToken != nil {
