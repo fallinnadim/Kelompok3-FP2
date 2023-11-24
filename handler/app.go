@@ -44,12 +44,12 @@ func StartApp() {
 	socialMediaController := NewSocialMediaController(socialMediaService)
 	photoController := NewPhotoController(photoService)
 	commentController := NewCommentController(commentService)
-	var endpoints = []string{"/socialmedias", "/photos", "/comments", "users"}
+
 	service := gin.Default()
 	service.GET("", func(ctx *gin.Context) {
+		var endpoints = []string{ctx.Request.Host + "/socialmedias", ctx.Request.Host + "/photos", ctx.Request.Host + "/comments", ctx.Request.Host + "users"}
 		ctx.JSON(http.StatusOK, gin.H{
-			"message":   "Final Project 2",
-			"baseURL":   ctx.Request.Host,
+			"message":   "Hacktiv8 Golang KS08 - Final Project 2",
 			"endpoints": endpoints,
 		})
 	})
