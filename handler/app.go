@@ -44,10 +44,14 @@ func StartApp() {
 	socialMediaController := NewSocialMediaController(socialMediaService)
 	photoController := NewPhotoController(photoService)
 	commentController := NewCommentController(commentService)
-
+	var endpoints = []string{"/socialmedias", "/photos", "/comments", "users"}
 	service := gin.Default()
 	service.GET("", func(ctx *gin.Context) {
-		ctx.JSON(http.StatusOK, "Welcome Home")
+		ctx.JSON(http.StatusOK, gin.H{
+			"message":   "Final Project 2",
+			"baseURL":   ctx.Request.Host,
+			"endpoints": endpoints,
+		})
 	})
 	authenticationRouter := service.Group("/users")
 	authenticationRouter.POST("/register", authenticationController.Register)
