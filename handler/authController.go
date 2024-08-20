@@ -45,6 +45,17 @@ func (a *AuthenticationController) Login(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, webResponse)
 }
 
+// @BasePath /api/v1
+
+// PingExample godoc
+// @Summary ping example
+// @Schemes
+// @Description do ping
+// @Tags example
+// @Accept json
+// @Produce json
+// @Success 200 {string} Helloworld
+// @Router /example/helloworld [get]
 func (a *AuthenticationController) Register(ctx *gin.Context) {
 	createUserRequest := dto.CreateUserRequest{}
 	err := ctx.ShouldBindJSON(&createUserRequest)

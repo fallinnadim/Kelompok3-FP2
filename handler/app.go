@@ -1,6 +1,7 @@
 package handler
 
 import (
+	docs "fp2/docs"
 	"fp2/infra/postgres"
 	"fp2/middleware"
 	repository "fp2/repository/auth"
@@ -13,12 +14,13 @@ import (
 	pServices "fp2/services/photo"
 	smServices "fp2/services/social_media"
 	userServices "fp2/services/users"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 	"log"
 	"net/http"
 	"os"
-
-	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator/v10"
 )
 
 func StartApp() {
@@ -46,6 +48,7 @@ func StartApp() {
 	commentController := NewCommentController(commentService)
 
 	service := gin.Default()
+	docs.SwaggerInfo.BasePath = "/api/v1"
 	service.GET("", func(ctx *gin.Context) {
 		var endpoints = []string{ctx.Request.Host + "/socialmedias", ctx.Request.Host + "/photos", ctx.Request.Host + "/comments", ctx.Request.Host + "/users"}
 		ctx.JSON(http.StatusOK, gin.H{
@@ -53,6 +56,7 @@ func StartApp() {
 			"endpoints": endpoints,
 		})
 	})
+	service.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	authenticationRouter := service.Group("/users")
 	authenticationRouter.POST("/register", authenticationController.Register)
 	authenticationRouter.POST("/login", authenticationController.Login)
